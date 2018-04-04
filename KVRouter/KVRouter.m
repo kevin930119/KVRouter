@@ -89,16 +89,6 @@
     if (!newClass) {
         return nil;
     }
-    UIViewController * vc = nil;
-    KVRouterCreateBlock createBlock = [router.url_createBlock_map objectForKey:newurl];
-    if (createBlock) {
-        vc = createBlock(parameter); //调用注册的自定义创建界面的回调
-        if (!vc) {
-            return nil; //如果没有，那么直接返回
-        }
-    }else {
-        vc = [[newClass alloc] init];
-    }
     //处理参数
     NSMutableDictionary * finalParameter = nil;
     if (urlarr.count == 2) {
@@ -114,6 +104,18 @@
             finalParameter = [NSMutableDictionary dictionaryWithDictionary:parameter];
         }
     }
+    
+    UIViewController * vc = nil;
+    KVRouterCreateBlock createBlock = [router.url_createBlock_map objectForKey:newurl];
+    if (createBlock) {
+        vc = createBlock(finalParameter); //调用注册的自定义创建界面的回调
+        if (!vc) {
+            return nil; //如果没有，那么直接返回
+        }
+    }else {
+        vc = [[newClass alloc] init];
+    }
+    
     if (finalParameter) {
         //传参
         [vc router:router getParameter:finalParameter];
